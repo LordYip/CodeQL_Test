@@ -23,12 +23,10 @@ jobs:
     - name: Install Build Dependencies  # ✅ Ensure required compilers are available
       run: sudo apt update && sudo apt install -y build-essential cmake
 
-    - name: Build the C/C++ Code (Required for CodeQL)  # ✅ Added build step
+    - name: Build the C Code (Required for CodeQL)
       run: |
-        mkdir -p build
-        cd build
-        cmake ..
-        make -j$(nproc) || true  # Use all CPU cores, ignore errors
+        gcc -o my_program *.c  # Replace `*.c` with your actual source files
+
 
     - name: Initialize CodeQL for C/C++
       uses: github/codeql-action/init@v3
