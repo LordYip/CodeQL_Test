@@ -21,19 +21,18 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Install Build Dependencies
-      run: sudo apt update && sudo apt install -y build-essential
+      run: sudo apt update && sudo apt install -y build-essential bear  # ✅ Install bear
 
-    - name: Build C Code Using Makefile  # ✅ Compiles all C files before CodeQL runs
-      run: make
+    - name: Generate Compilation Database with Bear
+      run: |
+        bear -- gcc -o my_program *.c || exit 1  # ✅ Uses Bear to generate compile_commands.json
+        ls -lah compile_commands.json  # ✅ Debugging step to confirm the file exists
 
-    - name: Verify Compilation Output  # ✅ Debugging step: check if the binary exists
-      run: ls -lah
-
-    - name: Initialize CodeQL for C  # ✅ Run CodeQL AFTER the build step
+    - name: Initialize CodeQL for C
       uses: github/codeql-action/init@v3
       with:
         languages: cpp
-        build-mode: "manual"
+        build-mode: "manual"  # ✅ Force manual compilation with Bear
 
     - name: Run CodeQL Analysis on Repository
       uses: github/codeql-action/analyze@v3
@@ -48,6 +47,7 @@ jobs:
       with:
         name: security-results
         path: security-results.json
+
 
 
    # - name: Send Security Results to API (For Future AI Integration)
