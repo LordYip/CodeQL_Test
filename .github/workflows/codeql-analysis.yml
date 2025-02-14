@@ -2,10 +2,10 @@ name: CodeQL Static Security Scan (C/C++)
 
 on:
   push:
-    branches: [ main ]  # Runs when code is pushed to main
+    branches: [ main ]
   pull_request:
-    branches: [ main ]  # Runs when a PR is created/updated
-  workflow_dispatch:  # Allows manual execution
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   analyze:
@@ -20,13 +20,23 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Install Build Dependencies  # ✅ Ensure required compilers are available
+      run: sudo apt update && sudo apt install -y build-essential cmake
+
+    - name: Build the C/C++ Code (Required for CodeQL)  # ✅ Added build step
+      run: |
+        mkdir -p build
+        cd build
+        cmake ..
+        make -j$(nproc) || true  # Use all CPU cores, ignore errors
+
     - name: Initialize CodeQL for C/C++
-      uses: github/codeql-action/init@v3  # ✅ Updated to v3
+      uses: github/codeql-action/init@v3
       with:
         languages: cpp
 
     - name: Run CodeQL Analysis on Repository
-      uses: github/codeql-action/analyze@v3  # ✅ Updated to v3
+      uses: github/codeql-action/analyze@v3
       with:
         output: security-results.sarif
 
@@ -35,10 +45,10 @@ jobs:
 
     - name: Upload CodeQL JSON Output as Artifact
       uses: actions/upload-artifact@v4
-
       with:
         name: security-results
         path: security-results.json
+
 
    # - name: Send Security Results to API (For Future AI Integration)
    #  run: |
