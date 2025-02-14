@@ -34,7 +34,8 @@ jobs:
       run: jq '.' security-results.sarif > security-results.json
 
     - name: Upload CodeQL JSON Output as Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
+
       with:
         name: security-results
         path: security-results.json
