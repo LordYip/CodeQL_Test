@@ -23,11 +23,17 @@ jobs:
     - name: Install Build Dependencies
       run: sudo apt update && sudo apt install -y build-essential
 
-    - name: Initialize CodeQL for C
+    - name: Build C Code Using Makefile  # ✅ Compiles all C files before CodeQL runs
+      run: make
+
+    - name: Verify Compilation Output  # ✅ Debugging step: check if the binary exists
+      run: ls -lah
+
+    - name: Initialize CodeQL for C  # ✅ Run CodeQL AFTER the build step
       uses: github/codeql-action/init@v3
       with:
         languages: cpp
-        build-mode: "autobuild"  # ✅ Force CodeQL to detect and compile C code
+        build-mode: "manual"
 
     - name: Run CodeQL Analysis on Repository
       uses: github/codeql-action/analyze@v3
